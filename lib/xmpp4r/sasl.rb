@@ -24,6 +24,8 @@ module Jabber
           Plain.new(stream)
         when 'ANONYMOUS'
           Anonymous.new(stream)
+        when 'X-OAUTH2'
+          Xoauth2.new(stream)
         else
           raise "Unknown SASL mechanism: #{mechanism}"
       end
@@ -42,6 +44,9 @@ module Jabber
         auth = REXML::Element.new 'auth'
         auth.add_namespace NS_SASL
         auth.attributes['mechanism'] = mechanism
+        if mechanism == 'X-OAUTH2'
+          auth.add_namespace "auth", "http://www.google.com/talk/protocol/auth"
+        end
         auth.text = text
         auth
       end
@@ -66,6 +71,21 @@ module Jabber
           true
         }
 
+        raise error if error
+      end
+    end
+    
+    class Xoauth2 < Base
+      def auth(password)
+        auth_text = "\x00#{@stream.jid.strip}\x00#{password}"
+        error = nil
+        @stream.send(generate_auth('X-OAUTH2', Base64::encode64(auth_text).gsub(/\s/, ''))) { |reply|
+          if reply.name != 'success'
+            error = reply.first_element(nil).name
+          end
+          true
+        }
+        
         raise error if error
       end
     end
