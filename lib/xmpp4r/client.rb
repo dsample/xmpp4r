@@ -121,6 +121,16 @@ module Jabber
         raise ClientAuthenticationFailure.new, $!.to_s
       end
     end
+    
+    def auth(password, mechanism)
+      begin
+        auth_sasl SASL.new(self, mechanism), password
+        #auth_nonsasl(password)
+      rescue
+        Jabber::debuglog("#{$!.class}: #{$!}\n#{$!.backtrace.join("\n")}")
+        raise ClientAuthenticationFailure.new, $!.to_s
+      end
+    end
 
     ##
     # Resource binding (RFC3920bis-06 - section 8.)
