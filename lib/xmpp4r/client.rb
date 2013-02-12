@@ -111,6 +111,8 @@ module Jabber
           auth_sasl SASL.new(self, 'DIGEST-MD5'), password
         elsif @stream_mechanisms.include? 'PLAIN'
           auth_sasl SASL.new(self, 'PLAIN'), password
+        elsif @stream_mechanisms.include? 'X-OAUTH2'
+          auth_sasl SASL.new(self, 'X-OAUTH2'), password
         else
           auth_nonsasl(password)
         end
