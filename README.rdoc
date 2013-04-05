@@ -117,16 +117,16 @@ require RubyGems to be installed.
 
 Presuming you've got an OAuth key for the sending account as `ident.access_token` and a jabber address string as `recipient`, the below function is a simple way to send a message, `body` being the message that is to be sent.
 
-	def send_gtalk_message(ident, recipient, body)
-	  jid = Jabber::JID.new(ident.username)
-	  client = Jabber::Client.new(jid)
-	  client.connect
-	  client.auth(ident.access_token, 'X-OAUTH2')
-	  
-	  to_jid = Jabber::JID.new(recipient)
-	  message = Jabber::Message::new(to_jid, body).set_type(:normal).set_id('1')
-	  client.send(message)
-	end
+  def send_gtalk_message(ident, recipient, body)
+    jid = Jabber::JID.new(ident.username)
+    client = Jabber::Client.new(jid)
+    client.connect
+    client.auth(ident.access_token, 'X-OAUTH2')
+    
+    to_jid = Jabber::JID.new(recipient)
+    message = Jabber::Message::new(to_jid, body).set_type(:normal).set_id('1')
+    client.send(message)
+  end
 
 Don't forget that you need to make sure the access_token is current (they're usually only valid for 1 hour).
 
